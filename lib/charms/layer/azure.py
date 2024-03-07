@@ -867,6 +867,9 @@ def _assign_role(request, role, resource_group=None):
     rg = request.resource_group
     if resource_group is not None:
         rg = resource_group
+    sub_id = kv().get("charm.azure.sub-id")
+    scope = f"/subscriptions/{sub_id}/resourceGroups/{rg}"
+
     try:
         _azure(
             "role",
@@ -874,8 +877,8 @@ def _assign_role(request, role, resource_group=None):
             "create",
             "--assignee-object-id",
             msi,
-            "--resource-group",
-            rg,
+            "--scope",
+            scope,
             "--role",
             role,
         )
