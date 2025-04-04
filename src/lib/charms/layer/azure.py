@@ -177,7 +177,7 @@ def send_additional_metadata(request):
     """
     run_config = hookenv.config() or {}
     res_grp_args = ["group", "show", "--name", request.resource_group]
-    if hasattr(request, 'subscription_id'):
+    if hasattr(request, "subscription_id"):
         res_grp_args += ["--subscription", request.subscription_id]
     res_grp = _azure(*res_grp_args)
     credentials = get_credentials()
@@ -185,18 +185,26 @@ def send_additional_metadata(request):
     # and the queries required to look them up are a PITA
     request.send_additional_metadata(
         resource_group_location=res_grp["location"],
-        vnet_name=run_config.get("vnetName")
-        if run_config.get("vnetName")
-        else "juju-internal-network",
-        vnet_resource_group=run_config.get("vnetResourceGroup")
-        if run_config.get("vnetResourceGroup")
-        else request.resource_group,
-        subnet_name=run_config.get("subnetName")
-        if run_config.get("subnetName")
-        else "juju-internal-subnet",
-        security_group_name=run_config.get("vnetSecurityGroup")
-        if run_config.get("vnetSecurityGroup")
-        else "juju-internal-nsg",
+        vnet_name=(
+            run_config.get("vnetName")
+            if run_config.get("vnetName")
+            else "juju-internal-network"
+        ),
+        vnet_resource_group=(
+            run_config.get("vnetResourceGroup")
+            if run_config.get("vnetResourceGroup")
+            else request.resource_group
+        ),
+        subnet_name=(
+            run_config.get("subnetName")
+            if run_config.get("subnetName")
+            else "juju-internal-subnet"
+        ),
+        security_group_name=(
+            run_config.get("vnetSecurityGroup")
+            if run_config.get("vnetSecurityGroup")
+            else "juju-internal-nsg"
+        ),
         security_group_resource_group=run_config["vnetSecurityGroupResourceGroup"],
         use_managed_identity=credentials["managed-identity"],
         aad_client=credentials["application-id"],

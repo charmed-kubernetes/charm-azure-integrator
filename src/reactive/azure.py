@@ -9,17 +9,17 @@ from charms.reactive import (
     toggle_flag,
     clear_flag,
     hook,
-    is_flag_set
+    is_flag_set,
 )
 from charms.reactive.relations import endpoint_from_name
 from charms import layer
 from charms.layer.azure import get_credentials
 
 
-@hook('update-status')
+@hook("update-status")
 def update_status():
     # need to recheck creds in case the credentials from Juju have changed
-    clear_flag('charm.azure.creds.set')
+    clear_flag("charm.azure.creds.set")
 
 
 @when_any("config.changed.credentials")
@@ -68,9 +68,7 @@ def no_requests():
     "charm.azure.initial-role-update",
 )
 @when_any(
-    "charm.azure.creds.changed",
-    "config.changed",
-    "endpoint.clients.requests-pending"
+    "charm.azure.creds.changed", "config.changed", "endpoint.clients.requests-pending"
 )
 def handle_requests():
     azure = endpoint_from_name("clients")
