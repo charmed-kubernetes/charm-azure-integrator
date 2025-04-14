@@ -6,7 +6,7 @@ from charmhelpers.core import hookenv
 from charms.reactive import set_flag
 
 from charms import layer
-from reactive import azure as reactive_azure
+import reactive.azure as reactive_azure
 
 
 def test_series_upgrade():
@@ -21,29 +21,29 @@ def test_series_upgrade():
 def test_update_roles_on_install(lib_azure, get_credentials):
     get_credentials.return_value = {"managed-identity": False}
     reactive_azure.update_roles_on_install()
-    assert not lib_azure.update_roles.called
+    lib_azure.update_roles.assert_not_called()
 
     get_credentials.return_value = {"managed-identity": True}
     reactive_azure.update_roles_on_install()
-    assert lib_azure.update_roles.called
+    lib_azure.update_roles.assert_called()
 
 
 @patch.object(reactive_azure, "get_credentials")
 @patch.object(layer, "azure")
 def test_update_roles_on_upgrade(lib_azure, get_credentials):
     reactive_azure.update_roles()
-    assert not get_credentials.called
-    assert not lib_azure.update_roles.called
+    get_credentials.assert_not_called()
+    lib_azure.update_roles.assert_not_called()
 
     set_flag("charm.azure.creds.set")
     get_credentials.return_value = {"managed-identity": False}
     reactive_azure.update_roles()
-    assert get_credentials.called
-    assert not lib_azure.update_roles.called
+    get_credentials.assert_called()
+    lib_azure.update_roles.assert_not_called()
 
     get_credentials.return_value = {"managed-identity": True}
     reactive_azure.update_roles()
-    assert lib_azure.update_roles.called
+    lib_azure.update_roles.assert_called()
 
 
 @patch.object(reactive_azure, "get_credentials")
@@ -53,15 +53,15 @@ def test_handle_requests(lib_azure, get_credentials):
     ep = reactive_azure.endpoint_from_name.return_value
     ep.requests = [Mock()]
     reactive_azure.handle_requests()
-    assert lib_azure.send_additional_metadata.called
-    assert not lib_azure.ensure_msi.called
-    assert ep.mark_completed.call_count == 1
+    lib_azure.send_additional_metadata.assert_called()
+    lib_azure.ensure_msi.assert_not_called()
+    ep.mark_completed.assert_called_once()
 
     ep.mark_completed.reset_mock()
     get_credentials.return_value = {"managed-identity": True}
     reactive_azure.handle_requests()
-    assert lib_azure.ensure_msi.called
-    assert ep.mark_completed.call_count == 1
+    lib_azure.ensure_msi.assert_called()
+    ep.mark_completed.assert_called_once()
 
 
 @patch.object(layer.azure, "get_credentials")
@@ -100,7 +100,7 @@ def test_get_credentials(run, login_cli):
     run.side_effect = FileNotFoundError
     hookenv.config.return_value = {"credentials": ""}
     assert layer.azure.get_credentials() == {}
-    assert layer.status.blocked.called
+    layer.status.blocked.assert_called()
 
     layer.status.blocked.reset_mock()
     run.side_effect = None
@@ -109,13 +109,12 @@ def test_get_credentials(run, login_cli):
         "foo": "bar",
         "managed-identity": True,
     }
-    assert not layer.status.blocked.called
+    layer.status.blocked.assert_not_called()
 
     layer.status.blocked.reset_mock()
     hookenv.config.return_value = {"credentials": "foo"}
     assert layer.azure.get_credentials() == {}
-    assert layer.status.blocked.called
-    assert layer.status.blocked.call_args[0] == (
+    layer.status.blocked.assert_called_with(
         "invalid value for credentials config",
     )
 
@@ -134,4 +133,4 @@ def test_get_credentials(run, login_cli):
         "foo": "qux",
         "managed-identity": False,
     }
-    assert not layer.status.blocked.called
+    layer.status.blocked.assert_not_called()

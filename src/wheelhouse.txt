@@ -1,1 +1,2 @@
 loadbalancer-interface
+setuptools==70.3.0
