@@ -2,3 +2,4 @@ loadbalancer-interface
 setuptools==70.3.0
 pbr==7.0.3
 hatchling
+poetry-core
