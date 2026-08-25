@@ -1,4 +1,5 @@
 loadbalancer-interface
 pbr==7.0.3
+calver==2022.6.26
 hatchling
 poetry-core
