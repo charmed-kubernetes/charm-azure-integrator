@@ -1,2 +1,4 @@
 loadbalancer-interface
-setuptools==70.3.0
+setuptools==77.0.3
+pbr==7.0.3
+ops==2.20.0
