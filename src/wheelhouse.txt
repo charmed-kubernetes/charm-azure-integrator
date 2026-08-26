@@ -1,7 +1,4 @@
 loadbalancer-interface
+setuptools==77.0.3
 pbr==7.0.3
-calver==2022.6.26
-setuptools==70.3.0
-ops==2.23.4
-hatchling<1.32
-poetry-core
+ops==2.20.0
